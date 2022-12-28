@@ -10,5 +10,6 @@ class modelAdmin(admin.ModelAdmin):
         "user",
         "address",
         "street",
-        "pincode"
+        "pincode",
+        "image",
     )

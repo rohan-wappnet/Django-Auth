@@ -1,7 +1,8 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import check_password
 from app1.models import Registration
 
 # Create your views here.
@@ -9,8 +10,32 @@ from app1.models import Registration
 
 @login_required(login_url='login')
 def HomePage(request):
+    if request.method == "POST":
+        currentpassword= request.user.password
+        currentpasswordentered = request.POST.get("currentpass")
+        newpass1 = request.POST.get("newpass")
+        newpass2 = request.POST.get("confpass")
+
+        matchcheck= check_password(currentpasswordentered, currentpassword)
+
+        if matchcheck:
+            if newpass1 == newpass2:
+                u = User.objects.get(username = request.user.username)
+                u.set_password(newpass1)
+                u.save()
+                update_session_auth_hash(request, u)
+                return render(request, 'home.html', {"updatee" : True, "user": request.user,
+        "reg": Registration.objects.filter(user = request.user).values})
+            else:
+                return render(request, 'home.html', {"error" : True, "user": request.user,
+        "reg": Registration.objects.filter(user = request.user).values})
+        else:
+            return render(request, 'home.html', {"error1" : True, "user": request.user,
+        "reg": Registration.objects.filter(user = request.user).values})
+
     context = {
-        "name": request.user.first_name
+        "user": request.user,
+        "reg": Registration.objects.filter(user = request.user).values
     }
     # print("---------------", Registration.objects.get(user=request.user).address)
     return render(request, 'home.html', context)
@@ -27,6 +52,7 @@ def SignupPage(request):
         address = request.POST.get("address")
         street = request.POST.get("street")
         pincode = request.POST.get("pincode")
+        img = request.FILES['img']
 
         if pass1 != pass2:
             return render(request, 'signup.html', {'alert_flag': True})
@@ -48,7 +74,8 @@ def SignupPage(request):
                     user_address = {
                         "address": address,
                         "street": street,
-                        "pincode": pincode
+                        "pincode": pincode,
+                        "image": img
                     }
 
                     new_user1 = Registration.objects.create(

@@ -10,6 +10,7 @@ class Registration(models.Model):
     address = models.CharField(max_length=100, default="")
     street = models.CharField(max_length=100, default="")
     pincode = models.CharField(max_length=10, default="")
+    image = models.ImageField(upload_to="app1/images", default="")
 
     def __str__(self):
         return self.user.username

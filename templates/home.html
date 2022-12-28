@@ -10,10 +10,101 @@
 
     <title>Home Page</title>
   </head>
-  <body>
-    <h1>Welcome {{ name }}</h1>
-    <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
 
+  <style>
+
+    .divv {
+      {% comment %} margin-left: 500px; {% endcomment %}
+      width : 950px;
+      height: 650px;
+      {% comment %} border : solid; {% endcomment %}
+      float : left;
+    }
+
+    .div1 {
+      {% comment %} margin-left: 500px; {% endcomment %}
+      width : 500px;
+      height: 650px;
+      {% comment %} border : solid; {% endcomment %}
+      float : left;
+    }
+
+    .div2 {
+      margin-top: -50px;
+      width : 450px;
+      height: 650px;
+      {% comment %} border : solid; {% endcomment %}
+      float : left;
+    }
+    
+  </style>
+
+  <body>
+
+    {% if error %}
+    <script>alert("Please Enter Same Password.")</script>  
+    {% endif %}
+
+    {% if error1 %}
+    <script>alert("Incorrect Current Password.")</script>  
+    {% endif %}
+
+    {% if updatee %}
+    <script>alert("Password updated successfully.")</script>  
+    {% endif %}
+
+    <div align="right" style="margin-right: 20px; margin-top: 2px;" >
+    <h2>Welcome {{ user.first_name }},
+    
+    <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a></h2>
+    </div>
+
+    {% comment %} ---------------------------------------------------- {% endcomment %}
+  
+      <br><br>
+      <div class="div1"></div>
+
+    <div class="divv">
+    
+      <form method="post">
+        {% csrf_token %} 
+        <div class="form-group">
+          <label for="exampleInputEmail1">Current Password</label>
+          <input type="password" class="form-control" id="currentpass" name="currentpass" placeholder="Current Password">
+          
+        </div>
+
+        <div class="form-group">
+          <label for="exampleInputPassword1">New Password</label>
+          <input type="password" class="form-control" id="newpass" name="newpass" placeholder="New Password">
+        </div>
+
+        <div class="form-group">
+          <label for="exampleInputPassword1">Confirm Password</label>
+          <input type="password" class="form-control" id="confpass" name="confpass" placeholder="Confirm Password">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update</button>
+      </form>
+
+    </div>
+
+    <div class="div2">
+
+        <div style="
+        width : 150px;
+        height: 150px;
+        float : left;
+        margin-left : 300px;
+        ">  
+        <img src='/media/{{reg.0.image}}' alt="..." style="width : 150px;height: 150px;">
+        
+        </div>
+
+
+    </div>
+  
+    {% comment %} ---------------------------------------------------- {% endcomment %}
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
