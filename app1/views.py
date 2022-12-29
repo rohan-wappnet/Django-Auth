@@ -10,26 +10,31 @@ from app1.models import Registration
 
 @login_required(login_url='login')
 def HomePage(request):
+    """Function View for home Page"""
     if request.method == "POST":
-        currentpassword= request.user.password
-        currentpasswordentered = request.POST.get("currentpass")
-        newpass1 = request.POST.get("newpass")
-        newpass2 = request.POST.get("confpass")
+        current_password= request.user.password     #Current user password stored in database
+        current_password_entered = request.POST.get("currentpass")  #Password entered by user in html
+        new_password_1 = request.POST.get("newpass")  #New Password entered by user in html
+        new_password_2 = request.POST.get("confpass")  #New Password entered by user in html
 
-        matchcheck= check_password(currentpasswordentered, currentpassword)
+        match_password = check_password(current_password_entered, current_password)  # Check password from db and html input
 
-        if matchcheck:
-            if newpass1 == newpass2:
-                u = User.objects.get(username = request.user.username)
-                u.set_password(newpass1)
-                u.save()
-                update_session_auth_hash(request, u)
+        if match_password:
+            
+            if new_password_1 == new_password_2:
+                user_object = User.objects.get(username = request.user.username)  #User object created
+                user_object.set_password(new_password_1)
+                user_object.save()
+                update_session_auth_hash(request, user_object) #Update session to prevent logout
+                
                 return render(request, 'home.html', {"updatee" : True, "user": request.user,
         "reg": Registration.objects.filter(user = request.user).values})
-            else:
+            
+            else:   #When entered password is not equal to confirm password
                 return render(request, 'home.html', {"error" : True, "user": request.user,
         "reg": Registration.objects.filter(user = request.user).values})
-        else:
+        
+        else: #When input password is not equal to user password
             return render(request, 'home.html', {"error1" : True, "user": request.user,
         "reg": Registration.objects.filter(user = request.user).values})
 
@@ -42,34 +47,39 @@ def HomePage(request):
 
 
 def SignupPage(request):
-    if request.method == "POST":
-        uname = request.POST.get("username")
+    """Function View for Signup Page"""
+    if request.method == "POST":                  #Storing all values from html input to variables
+        username = request.POST.get("username")
         email = request.POST.get("email")
-        pass1 = request.POST.get("password1")
-        pass2 = request.POST.get("password2")
-        fntxt = request.POST.get("fntxt")
-        lntxt = request.POST.get("lntxt")
+        password_1 = request.POST.get("password1")
+        password_2 = request.POST.get("password2")
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
         address = request.POST.get("address")
         street = request.POST.get("street")
         pincode = request.POST.get("pincode")
         img = request.FILES['img']
 
-        if pass1 != pass2:
+        if password_1 != password_2:     #Comparing both passwords
             return render(request, 'signup.html', {'alert_flag': True})
         else:
+
             try:
-                User.objects.get(username=uname)
+                User.objects.get(username = username)
                 return render(request, 'signup.html', {'error': True})
+            
             except User.DoesNotExist:
-                emlchck = User.objects.filter(email=email)
-                if emlchck:
+                email_check = User.objects.filter(email=email)
+                
+                if email_check:
                     return render(request, 'signup.html', {'error1': True})
+                
                 else:
-                    new_user = User.objects.create_user(
-                        username=uname, email=email, password=pass1)
-                    new_user.first_name = fntxt
-                    new_user.last_name = lntxt
-                    new_user.save()
+                    new_user = User.objects.create_user(      #Creating new user object
+                        username=username, email=email, password=password_1)
+                    new_user.first_name = first_name
+                    new_user.last_name = last_name
+                    new_user.save()         #Saving data in New user model
 
                     user_address = {
                         "address": address,
@@ -84,16 +94,18 @@ def SignupPage(request):
 
                     )
                     return redirect('login')
+    
     return render(request, 'signup.html')
 
 
 def LoginPage(request):
-    if request.method == "POST":
-        uname1 = request.POST.get('username')
-        pass1 = request.POST.get('pass')
+    """Function View for Login Page"""
+    if request.method == "POST":     #Storing all values from html input to variables
+        username = request.POST.get('username')
+        password = request.POST.get('pass')
         # user_email = User.objects.get(email=uname1).username
 
-        user = authenticate(request, username=uname1, password=pass1)
+        user = authenticate(request, username = username, password = password)
 
         if user is not None:
             login(request, user)

@@ -135,13 +135,16 @@ button{
     </style>
 </head>
 <body>
+
     {% if alert_flag %}
     <script>alert("Incorrect username or password.")</script>  
     {% endif %}
+
     <div class="background">
         <div class="shape"></div>
         <div class="shape"></div>
     </div>
+    
     <form method="post">
         <h3>Login Here</h3>
         {% csrf_token %} 
